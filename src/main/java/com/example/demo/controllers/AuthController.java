@@ -10,7 +10,10 @@ import com.example.demo.repositories.RoleRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.security.JwtUtils;
 import com.example.demo.security.services.UserDetailsImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +22,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +49,18 @@ public class AuthController {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Value("${Spring.datasource.driver-class-name}")
+    private String myDriver;
+
+    @Value("${Spring.datasource.url}")
+    private String myUrl;
+
+    @Value("${Spring.datasource.username}")
+    private String username;
+
+    @Value("${Spring.datasource.password}")
+    private String password;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
@@ -74,6 +93,35 @@ public class AuthController {
         User user = new User(signupRequest.getUsername(), encoder.encode(signupRequest.getPassword()));
         Set<String> strRoles = signupRequest.getRoles();
         Set<Role> roles = new HashSet<>();
+
+        //add missing roles to database automatically
+        int roleCheck = roleRepository.isRoleEmpty();
+
+        if (roleCheck < ERole.values().length) {
+            int id = 1;
+            for (ERole role : ERole.values()) {
+                if (roleRepository.findByName(role).isEmpty()) {
+                    try {
+                        Connection conn = DriverManager.getConnection(myUrl, username, password);
+                        Class.forName(myDriver);
+                        String query = "Insert into role (id, name) values (?,?)";
+                        PreparedStatement statement = conn.prepareStatement(query);
+
+                        statement.setString(1, Integer.toString(id));
+                        statement.setString(2, role.toString());
+
+                        statement.executeUpdate();
+
+                    } catch (Exception e) {
+                        Logger logger = LoggerFactory.getLogger(AuthController.class);
+                        System.out.println(e.getMessage());
+
+                    }
+                }
+                id++;
+            }
+        }
+
 
         if (strRoles == null) {
             Role userRole = roleRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found"));
