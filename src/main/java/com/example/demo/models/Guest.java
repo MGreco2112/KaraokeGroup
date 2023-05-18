@@ -1,9 +1,7 @@
 package com.example.demo.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 
 @Entity
 public class Guest {
@@ -12,6 +10,11 @@ public class Guest {
     private Long id;
 
     //possibly generate random hash to use as display name instead of raw database generated id
+
+    @ManyToOne
+    @JoinColumn(name = "room_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("guests")
+    private Room room;
 
     public Guest() {
     }
@@ -22,5 +25,13 @@ public class Guest {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
     }
 }

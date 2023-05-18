@@ -1,9 +1,7 @@
 package com.example.demo.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -14,6 +12,11 @@ public class SpotifySong {
 
     @Size(max = 500)
     private String spotifySongURL;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("songs")
+    private Room room;
 
     public SpotifySong() {
     }
@@ -36,5 +39,13 @@ public class SpotifySong {
 
     public void setSpotifySongURL(String spotifySongURL) {
         this.spotifySongURL = spotifySongURL;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
     }
 }
