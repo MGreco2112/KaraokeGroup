@@ -26,6 +26,10 @@ public class SpotifySong {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getSpotifySongURL() {
         return spotifySongURL;
     }
