@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.models.Guest;
 import com.example.demo.models.Room;
 import com.example.demo.repositories.GuestRepository;
 import com.example.demo.repositories.RoomRepository;
@@ -43,4 +44,19 @@ public class RoomController {
     }
 
     //TODO create Post, Update, and Create routes
+
+    @PostMapping("/new/host/id/{id}")
+    public ResponseEntity<Room> createRoomWithHostID(@PathVariable Long id) {
+        Guest newHost = guestRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Room newRoom = new Room(
+                newHost
+        );
+
+        repository.save(newRoom);
+        newHost.setRoom(newRoom);
+        guestRepository.save(newHost);
+
+        return new ResponseEntity<>(newRoom, HttpStatus.CREATED);
+    }
 }

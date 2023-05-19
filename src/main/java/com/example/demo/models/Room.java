@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -13,6 +14,7 @@ public class Room {
     private Long id;
 
     @OneToOne
+    @JsonIgnoreProperties("room")
     private Guest host;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)

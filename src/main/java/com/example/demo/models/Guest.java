@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,7 +14,7 @@ public class Guest {
 
     @ManyToOne
     @JoinColumn(name = "room_id", referencedColumnName = "id")
-    @JsonIgnoreProperties("guests")
+    @JsonIgnoreProperties({"guests", "host"})
     private Room room;
 
     public Guest() {
