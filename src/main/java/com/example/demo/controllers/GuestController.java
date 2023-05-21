@@ -40,6 +40,8 @@ public class GuestController {
     public ResponseEntity<String> deleteGuestById(@PathVariable Long id) {
         Guest selGuest = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        selGuest.setRoom(null);
+
         repository.delete(selGuest);
 
         return ResponseEntity.ok("Guest Deleted");
