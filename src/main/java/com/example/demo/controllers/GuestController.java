@@ -1,7 +1,9 @@
 package com.example.demo.controllers;
 
 import com.example.demo.models.Guest;
+import com.example.demo.models.Room;
 import com.example.demo.repositories.GuestRepository;
+import com.example.demo.repositories.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +41,6 @@ public class GuestController {
     @DeleteMapping("/delete/id/{id}")
     public ResponseEntity<String> deleteGuestById(@PathVariable Long id) {
         Guest selGuest = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        selGuest.setRoom(null);
 
         repository.delete(selGuest);
 

@@ -2,9 +2,11 @@ package com.example.demo.controllers;
 
 import com.example.demo.models.Guest;
 import com.example.demo.models.Room;
+import com.example.demo.models.SpotifySong;
 import com.example.demo.repositories.GuestRepository;
 import com.example.demo.repositories.RoomRepository;
 import com.example.demo.repositories.SpotifySongRepository;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,20 +45,69 @@ public class RoomController {
         return ResponseEntity.ok(selRoom);
     }
 
-    //TODO create Post, Update, and Create routes
-
     @PostMapping("/new/host/id/{id}")
     public ResponseEntity<Room> createRoomWithHostID(@PathVariable Long id) {
+
         Guest newHost = guestRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Room newRoom = new Room(
-                newHost
-        );
+        Room newRoom = new Room(newHost);
 
         repository.save(newRoom);
-        newHost.setRoom(newRoom);
+        newHost.setHostRoom(newRoom);
+        newHost.setIsHost(true);
         guestRepository.save(newHost);
 
         return new ResponseEntity<>(newRoom, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/add/guest/{gId}/room/{rId}")
+    public ResponseEntity<Room> addGuestToRoom(@PathVariable Long gId, @PathVariable Long rId) {
+        Guest selGuest = guestRepository.findById(gId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Room selRoom = repository.findById(rId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        selRoom.addGuest(selGuest);
+        repository.save(selRoom);
+        selGuest.setRoom(selRoom);
+        guestRepository.save(selGuest);
+
+        return ResponseEntity.ok(selRoom);
+    }
+
+    @PutMapping("/remove/guest/{gId}/room/{rId}")
+    public ResponseEntity<Room> removeGuestFromRoom(@PathVariable Long gId, @PathVariable Long rId) {
+        Guest selGuest = guestRepository.findById(gId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Room selRoom = repository.findById(rId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        selRoom.removeGuest(selGuest);
+        repository.save(selRoom);
+        selGuest.setRoom(null);
+        guestRepository.save(selGuest);
+
+        return ResponseEntity.ok(selRoom);
+    }
+
+    @DeleteMapping("/delete/id/{id}")
+    public ResponseEntity<String> deleteRoomById(@PathVariable Long id) {
+        Room selRoom = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Guest host = selRoom.getHost();
+        host.setRoom(null);
+        guestRepository.save(host);
+
+        for (Guest guest : selRoom.getGuests()) {
+            guest.setRoom(null);
+            guestRepository.save(guest);
+        }
+
+        for (SpotifySong song : selRoom.getSongs()) {
+            song.setRoom(null);
+            songRepository.save(song);
+        }
+
+        repository.delete(selRoom);
+
+        return ResponseEntity.ok("Deleted Room");
     }
 }
