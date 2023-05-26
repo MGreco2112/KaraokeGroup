@@ -42,36 +42,27 @@ public class GuestController {
 
     @DeleteMapping("/delete/id/{id}")
     public ResponseEntity<String> deleteGuestById(@PathVariable Long id) {
-        System.out.println(1);
         Guest selGuest = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        System.out.println(2);
         if (selGuest.getRoom() != null || selGuest.getIHost()) {
-            System.out.println(3);
             Room selRoom;
 
             if (selGuest.getHostRoom() != null) {
-                System.out.println(4);
                 selRoom = selGuest.getHostRoom();
                 selRoom.setHost(null);
             } else {
-                System.out.println(5);
                 selRoom = selGuest.getRoom();
                 selRoom.removeGuest(selGuest);
             }
 
-            System.out.println(6);
             roomRepository.save(selRoom);
 
-            System.out.println(7);
             selGuest.setRoom(null);
-            System.out.println(8);
             selGuest.setHostRoom(null);
-            System.out.println(9);
             repository.save(selGuest);
         }
 
-        System.out.println(10);
+
         repository.delete(selGuest);
 
         return ResponseEntity.ok("Guest Deleted");
