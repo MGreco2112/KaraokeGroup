@@ -50,12 +50,13 @@ public class GuestController {
             if (selGuest.getHostRoom() != null) {
                 selRoom = selGuest.getHostRoom();
                 selRoom.setHost(null);
-            } else {
+                roomRepository.save(selRoom);
+            } else if (selGuest.getRoom() != null){
                 selRoom = selGuest.getRoom();
                 selRoom.removeGuest(selGuest);
+                roomRepository.save(selRoom);
             }
 
-            roomRepository.save(selRoom);
 
             selGuest.setRoom(null);
             selGuest.setHostRoom(null);

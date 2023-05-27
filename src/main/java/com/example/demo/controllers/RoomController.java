@@ -89,10 +89,14 @@ public class RoomController {
 
     @DeleteMapping("/delete/id/{id}")
     public ResponseEntity<String> deleteRoomById(@PathVariable Long id) {
+
         Room selRoom = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Guest host = selRoom.getHost();
-        host.setRoom(null);
+        Guest host = guestRepository.findById(selRoom.getHost().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        host.setHostRoom(null);
+        selRoom.setHost(null);
+
         guestRepository.save(host);
 
         for (Guest guest : selRoom.getGuests()) {
@@ -105,6 +109,7 @@ public class RoomController {
             songRepository.save(song);
         }
 
+        repository.save(selRoom);
         repository.delete(selRoom);
 
         return ResponseEntity.ok("Deleted Room");
