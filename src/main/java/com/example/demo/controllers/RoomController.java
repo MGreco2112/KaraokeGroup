@@ -64,7 +64,7 @@ public class RoomController {
         Room selRoom = repository.findById(rId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Guest newHost = guestRepository.findById(hId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Guest oldHost = selRoom.getHost();
+        Guest oldHost = guestRepository.findById(selRoom.getHost().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         oldHost.setHostRoom(null);
         oldHost.setIsHost(false);
 
