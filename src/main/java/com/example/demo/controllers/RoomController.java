@@ -81,6 +81,22 @@ public class RoomController {
         return ResponseEntity.ok(repository.save(selRoom));
     }
 
+    @PutMapping("/update/host/{hId}/guest/{gId}/room/{rId}")
+    public ResponseEntity<Room> exchangeHostInRoom(@PathVariable Long hId, @PathVariable Long gId, @PathVariable Long rId) {
+        Room selRoom = repository.findById(rId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Guest newHost = guestRepository.findById(hId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Guest oldHost = guestRepository.findById(gId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        newHost.setRoom(null);
+        oldHost.setRoom(selRoom);
+        selRoom.setHost(newHost);
+
+        guestRepository.save(oldHost);
+        guestRepository.save(newHost);
+
+        return new ResponseEntity<>(repository.save(selRoom), HttpStatus.ACCEPTED);
+    }
+
     @PutMapping("/add/guest/{gId}/room/{rId}")
     public ResponseEntity<Room> addGuestToRoom(@PathVariable Long gId, @PathVariable Long rId) {
         Guest selGuest = guestRepository.findById(gId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

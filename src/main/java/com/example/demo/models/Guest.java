@@ -20,7 +20,7 @@ public class Guest {
     private Room room;
 
     @OneToOne
-    @JsonIgnoreProperties("host")
+    @JsonIgnoreProperties({"host", "guests"})
     private Room hostRoom;
 
     public Guest() {
