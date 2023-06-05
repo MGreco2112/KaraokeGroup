@@ -89,6 +89,7 @@ public class RoomController {
 
         newHost.setRoom(null);
         oldHost.setRoom(selRoom);
+        oldHost.setHostRoom(null);
         selRoom.setHost(newHost);
 
         guestRepository.save(oldHost);
