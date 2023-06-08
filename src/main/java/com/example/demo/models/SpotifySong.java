@@ -10,6 +10,8 @@ public class SpotifySong {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     @Size(max = 500)
     private String spotifySongURL;
 
@@ -39,6 +41,14 @@ public class SpotifySong {
 
     public void setSpotifySongURL(String spotifySongURL) {
         this.spotifySongURL = spotifySongURL;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Room getRoom() {
