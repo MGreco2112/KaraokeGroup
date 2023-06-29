@@ -10,7 +10,6 @@ import com.example.demo.repositories.RoleRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.security.JwtUtils;
 import com.example.demo.security.services.UserDetailsImpl;
-import kong.unirest.Unirest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
