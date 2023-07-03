@@ -33,7 +33,8 @@ public class SpotifySongController {
     @PostMapping()
     public ResponseEntity<SpotifySong> postNewSong(@RequestBody NewSongRequest request) {
         SpotifySong newSong = new SpotifySong(
-                request.getSpotifySongURL()
+                request.getSpotifySongURL(),
+                request.getName()
         );
 
         return new ResponseEntity<>(repository.save(newSong), HttpStatus.CREATED);
