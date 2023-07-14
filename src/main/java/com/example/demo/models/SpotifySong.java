@@ -23,9 +23,10 @@ public class SpotifySong {
     public SpotifySong() {
     }
 
-    public SpotifySong(String spotifySongURL, String name) {
+    public SpotifySong(String spotifySongURL, String name, Room room) {
         this.spotifySongURL = spotifySongURL;
         this.name = name;
+        this.room = room;
     }
 
     public Long getId() {
