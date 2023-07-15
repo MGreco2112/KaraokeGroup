@@ -1,7 +1,9 @@
 package com.example.demo.controllers;
 
+import com.example.demo.models.Room;
 import com.example.demo.models.SpotifySong;
 import com.example.demo.payload.request.NewSongRequest;
+import com.example.demo.repositories.RoomRepository;
 import com.example.demo.repositories.SpotifySongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import java.util.List;
 public class SpotifySongController {
     @Autowired
     private SpotifySongRepository repository;
+    @Autowired
+    private RoomRepository roomRepository;
 
     @GetMapping("/all")
     public List<SpotifySong> getAllSongs() {
@@ -30,12 +34,22 @@ public class SpotifySongController {
         return ResponseEntity.ok(selSong);
     }
 
+    @GetMapping("room/id/{id}")
+    public ResponseEntity<List<SpotifySong>> getSongsByRoomId(@PathVariable Long id) {
+        List<SpotifySong> selSongs = repository.findSongsByRoomId(id);
+
+        return ResponseEntity.ok(selSongs);
+    }
+
     @PostMapping()
     public ResponseEntity<SpotifySong> postNewSong(@RequestBody NewSongRequest request) {
+
+        Room selRoom = roomRepository.findById(request.getRoom().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         SpotifySong newSong = new SpotifySong(
                 request.getSpotifySongURL(),
                 request.getName(),
-                request.getRoom()
+                selRoom
         );
 
         return new ResponseEntity<>(repository.save(newSong), HttpStatus.CREATED);
