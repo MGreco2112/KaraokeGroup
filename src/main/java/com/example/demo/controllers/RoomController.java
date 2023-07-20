@@ -147,6 +147,20 @@ public class RoomController {
         return ResponseEntity.ok(selRoom);
     }
 
+    @DeleteMapping("/delete/song/id/{sId}/room/id/{rId}")
+    public ResponseEntity<Room> deleteSongFromRoom(@PathVariable Long sId, @PathVariable Long rId) {
+        SpotifySong selSong = songRepository.findById(sId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Room selRoom = repository.findById(rId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        selSong.setRoom(null);
+
+        songRepository.save(selSong);
+        songRepository.delete(selSong);
+
+        return ResponseEntity.ok(selRoom);
+    }
+
     @DeleteMapping("/delete/id/{id}")
     public ResponseEntity<String> deleteRoomById(@PathVariable Long id) {
 
